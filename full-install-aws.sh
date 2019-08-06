@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 #############################################################################
-# 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & keycloak
+# 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & ECR & keycloak & EFK & jenkins ....
+# 必須要在 cloud shell上執行, 整個過程大概40分鐘
+# 執行步驟:
+# 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
+# 2. 修改 full-install-aws.sh 裡面 "填寫必要變數"  內容
+# 3. chmod 740 full-install-aws.sh
+# 4. ./full-install-aws.sh
+
+# 刪除整個 project 請執行 deleteproject
 #############################################################################
 
 ############################################################################
