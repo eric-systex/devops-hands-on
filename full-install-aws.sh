@@ -6,14 +6,14 @@
 ############################################################################
 # 填寫必要變數   
 ############################################################################
-# AWS Region，例如 us-west-2  https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
+# AWS Region， 代碼網址 https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
 # 如果要建立兩座請分別建立在不同的region
 AWS_REGION=<輸入要在哪個region建立>
 
-# root User ID，例如 348053640110
+# root User ID
 AWS_ACCOUNT_ID=<輸入自己的accout_id>
 
-# IAM 使用者名稱，例如 A506-Harry
+# IAM 使用者名稱
 # 執行 Script 時會需要在 互動介面輸入 AWS 程式存取金鑰，請事先產生及複製保存 Access Key ID 和 Secret access key
 iamuseraccount=<請變更自己的AWS上的IAM user>
 
@@ -26,13 +26,25 @@ VPC_STACK_NAME=<vpc-name>
 # 輸入eks的叢集名稱
 CLUSTER_STACK_NAME=<eksname>
 
-# 因為要建立EC2給EKS使用必須要新建一組ssh key: $SSH_KEY_NAME.pem
-SSH_KEY_NAME=eksworkshopsshkey
+# 建立EC2給EKS使用必須要新建一組ssh key: 私鑰存檔為 $SSH_KEY_NAME.pem
+SSH_KEY_NAME=<sshkeyname>
+
+#########
+# 範例
+#AWS_REGION=ap-southeast-1
+#AWS_ACCOUNT_ID=348053640110
+#iamuseraccount=A506-Harry
+#CURRENT_HOME=$(pwd)
+#VPC_STACK_NAME=vpcharry
+#CLUSTER_STACK_NAME=eksharry
+#SSH_KEY_NAME=eksworkshopsshkey
+##########
 
 
-##########################
+
+#####################################
 ### 逐步執行的function
-##########################
+#####################################
 main() {
 initialclientcloudshell
 installeks
@@ -48,24 +60,11 @@ installistio
 installEFK
 installKSM
 setupService
-# createhaproxy
-# deleteproject
 
-> ~/.my-env
-echo "INGRESS_HOST=$INGRESS_HOST" >> ~/.my-env
-cat <<EOF
--------------------------------------------------------------
-環境安裝完成
--------------------------------------------------------------
-Istio Bookinfo 示範程式: http://bookinfo.$INGRESS_HOST.nip.io/
-K8S Health Monitoring  : http://grafana.$INGRESS_HOST.nip.io/
-Kiali Service Graph    : http://kiali.$INGRESS_HOST.nip.io/
-Jaeger Tracing         : http://jaeger.$INGRESS_HOST.nip.io/
-Kibana Logging         : http://kibana.$INGRESS_HOST.nip.io/
-Jenkins CI/CD          : http://jenkins.$INGRESS_HOST.nip.io/
-Keycloak               : http://keycloak.$INGRESS_HOST.nip.io/
--------------------------------------------------------------
-EOF
+# istio會建立一個ELB使用的subdomain, 如果不用R53可以使用haproxy
+# createhaproxy
+# 清除使用到的所有AWS上的付費服務
+# deleteproject
 }
 
 
@@ -449,6 +448,21 @@ setupService() {
 
   printf "  開啟對外服務中..."
   helm template --set istio.ingressgateway.ip=$INGRESS_HOST devops-hands-on/svc | kubectl apply -f - > /dev/null 2>&1 && echo "完成"
+  > ~/.my-env
+  echo "INGRESS_HOST=$INGRESS_HOST" >> ~/.my-env
+  cat <<EOF
+-------------------------------------------------------------
+環境安裝完成
+-------------------------------------------------------------
+Istio Bookinfo 示範程式: http://bookinfo.$INGRESS_HOST.nip.io/
+K8S Health Monitoring  : http://grafana.$INGRESS_HOST.nip.io/
+Kiali Service Graph    : http://kiali.$INGRESS_HOST.nip.io/
+Jaeger Tracing         : http://jaeger.$INGRESS_HOST.nip.io/
+Kibana Logging         : http://kibana.$INGRESS_HOST.nip.io/
+Jenkins CI/CD          : http://jenkins.$INGRESS_HOST.nip.io/
+Keycloak               : http://keycloak.$INGRESS_HOST.nip.io/
+-------------------------------------------------------------
+EOF
 }
 
 cd ~
