@@ -49,6 +49,7 @@ installEFK
 installKSM
 setupService
 # createhaproxy
+# deleteproject
 
 > ~/.my-env
 echo "INGRESS_HOST=$INGRESS_HOST" >> ~/.my-env
@@ -464,5 +465,22 @@ aws cloudformation create-stack  --stack-name  Haproxy-create --template-body fi
 sleep 20
 }
 #######################################################
+
+deleteproject(){
+aws cloudformation delete-stack --stack-name $VPC_STACK_NAME
+aws cloudformation delete-stack --stack-name $CLUSTER_STACK_NAME
+aws ecr delete-repository --force --repository-name alertmanager --force 
+aws ecr delete-repository --force --repository-name prometheus --force 
+aws ecr delete-repository --force --repository-name nodeexporter --force 
+aws ecr delete-repository --force --repository-name kubestatemetrics --force 
+aws ecr delete-repository --force --repository-name grafana --force 
+aws ecr delete-repository --force --repository-name debian9 --force 
+aws ecr delete-repository --force --repository-name jnlp-slave --force 
+aws iam delete-user --user-name jenkine-ecr
+aws iam delete-group --group-name EKSAdmin
+aws iam delete-role --role-name AmazonEKSAdminRole 
+}
+
+########################################################
 
 main
