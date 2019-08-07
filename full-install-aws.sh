@@ -2,8 +2,9 @@
 #############################################################################
 # 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & ECR & keycloak & EFK & jenkins ....
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
-# 執行步驟:
-# bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh)
+# 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) create
+# 執行清除作業: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
+
 ## 或是想定義名稱
 ## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
 ## 2. 修改 full-install-aws.sh 裡面 "如果不爽想親自定義名稱請改下面"  下面內容
@@ -82,6 +83,7 @@ echo "產生出一把私鑰 $SSH_KEY_NAME"
 ### 逐步執行的function
 #####################################
 main() {
+if [ $1 = create ]; then
 installeks
 checkeksstatus
 createecr
@@ -95,11 +97,15 @@ installistio
 installEFK
 installKSM
 setupService
-
 # istio會建立一個ELB使用的subdomain, 如果不用R53可以使用haproxy
 # createhaproxy
-# 清除使用到的所有AWS上的付費服務
-# deleteproject
+fi
+
+if [ $1 = delete ]; then
+echo "清除使用到的所有AWS上的付費服務"
+deleteproject
+fi
+
 }
 
 
@@ -521,4 +527,4 @@ aws iam delete-role --role-name AmazonEKSAdminRole
 
 ########################################################
 
-main
+main $1
