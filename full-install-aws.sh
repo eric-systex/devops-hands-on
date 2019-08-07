@@ -3,42 +3,70 @@
 # 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & ECR & keycloak & EFK & jenkins ....
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
 # 執行步驟:
-# 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
-# 2. 修改 full-install-aws.sh 裡面 "填寫必要變數"  內容
-# 3. chmod 740 full-install-aws.sh
-# 4. ./full-install-aws.sh
+# bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh)
+## 或是想定義名稱
+## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
+## 2. 修改 full-install-aws.sh 裡面 "如果不爽想親自定義名稱請改下面"  下面內容
+## 3. chmod 740 full-install-aws.sh
+## 4. ./full-install-aws.sh
 
 # 刪除整個 project 請執行 deleteproject
 #############################################################################
 
 ############################################################################
-# 填寫必要變數   
+# 登入aws 並取得變數
 ############################################################################
 # AWS Region， 代碼網址 https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
 # 如果要建立兩座請分別建立在不同的region
-AWS_REGION=<輸入要在哪個region建立>
+
+# 安裝套件在GCP的cloudshell上
+sudo apt-get -y install python3.6 python3-pip  > /dev/null 2>&1
+pip3 install awscli --upgrade --user  > /dev/null 2>&1
+echo "請到 AWS 的IAM 上取得帳號的 Access Key ID 和 Secret access key"
+
+# 使用者是否登入
+echo "請於下列互動介面輸入剛剛取得 AWS 的 Access Key ID , Secret access key 和 REGION 以及相關資訊"
+aws configure
+
+########################
+AWS_REGION=$(awk "NR==2{print;exit}" .aws/config |awk -F'=' '{ print $2 }' |awk -F' ' '{ print $1 }')
+echo "REGION : $AWS_REGION"
 
 # root User ID
-AWS_ACCOUNT_ID=<輸入自己的accout_id>
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --output text --query 'Account')
+echo "您root的帳號ID為 : $AWS_ACCOUNT_ID"
 
 # IAM 使用者名稱
 # 執行 Script 時會需要在 互動介面輸入 AWS 程式存取金鑰，請事先產生及複製保存 Access Key ID 和 Secret access key
-iamuseraccount=<請變更自己的AWS上的IAM user>
+iamuseraccount=$(aws sts get-caller-identity --output text --query 'Arn' |awk -F'/' '{print $2}')
+echo "您使用的帳號為 : $iamuseraccount"
 
 # 設定家目錄為預設工作目錄的參數
 CURRENT_HOME=$(pwd)
 
+# 產生亂數
+  if [ -z "$Random" ]
+  then
+  Randomvar=$(cat /proc/sys/kernel/random/uuid | cut -b -6)
+  Random=$Randomvar
+  echo "Random=$Randomvar" >> ~/.my-env 
+  fi
+  echo "您使用的亂數為 : $Random"
+
 # 輸入VPC的名稱
-VPC_STACK_NAME=<vpc-name>
+VPC_STACK_NAME=ekspvc$Random
+echo "VPC name : $VPC_STACK_NAME"
 
 # 輸入eks的叢集名稱
-CLUSTER_STACK_NAME=<eksname>
+CLUSTER_STACK_NAME=eks$Random
+echo "EKS名稱 : $CLUSTER_STACK_NAME"
 
 # 建立EC2給EKS使用必須要新建一組ssh key: 私鑰存檔為 $SSH_KEY_NAME.pem
-SSH_KEY_NAME=<sshkeyname>
+SSH_KEY_NAME=ekswnodesshkey$Random
+echo "產生出一把私鑰 $SSH_KEY_NAME"
 
-#########
-# 範例
+######################
+# 如果不爽想親自定義名稱請改下面
 #AWS_REGION=ap-southeast-1
 #AWS_ACCOUNT_ID=348053640110
 #iamuseraccount=A506-Harry
@@ -46,7 +74,7 @@ SSH_KEY_NAME=<sshkeyname>
 #VPC_STACK_NAME=vpcharry
 #CLUSTER_STACK_NAME=eksharry
 #SSH_KEY_NAME=eksworkshopsshkey
-##########
+##################
 
 
 
@@ -54,7 +82,6 @@ SSH_KEY_NAME=<sshkeyname>
 ### 逐步執行的function
 #####################################
 main() {
-initialclientcloudshell
 installeks
 checkeksstatus
 createecr
@@ -75,17 +102,6 @@ setupService
 # deleteproject
 }
 
-
-initialclientcloudshell(){
-# 安裝aws cli on GCP上的 cloudshell
-sudo apt-get -y install python3.6 python3-pip  > /dev/null 2>&1
-pip3 install awscli --upgrade --user  > /dev/null 2>&1
-echo "請到 AWS 的IAM 上取得帳號的 Access Key ID 和 Secret access key"
-
-# 確認使用者是否登入
-echo "請於下列互動介面輸入剛剛取得 AWS 的 Access Key ID 和 Secret access key"
-aws configure
-}
 
 # Install eks
 installeks() {
