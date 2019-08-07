@@ -9,9 +9,7 @@
 ## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
 ## 2. 修改 full-install-aws.sh 裡面 "如果不爽想親自定義名稱請改下面"  下面內容
 ## 3. chmod 740 full-install-aws.sh
-## 4. ./full-install-aws.sh
-
-# 刪除整個 project 請執行 deleteproject
+## 4. ./full-install-aws.sh create
 #############################################################################
 
 ############################################################################
