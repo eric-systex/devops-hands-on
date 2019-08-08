@@ -103,8 +103,13 @@ installistio
 installEFK
 installKSM
 setupService
+
 # istio會建立一個ELB使用的subdomain, 如果不用R53可以使用haproxy
 # createhaproxy
+
+# 由Cloudwatch Event 排程 --> lambda --> bash shell --> auto scale group --> 控制worknode 數量 ; out: 7:30, in: 19:30
+# ScheduleScaleInOut
+
 fi
 
 if [ $1 = delete ]; then
@@ -581,6 +586,109 @@ SUBNET2=$Subnet02 \
 SUBNET3=$Subnet03 \
 CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME \
 make update-eks-cluster
+}
+
+
+ScheduleScaleInOut(){
+
+source envprofile
+
+# 建立lambda 來做scalein / out
+#############################################
+cd %CURRENT_HOME
+# 建立nodejs來執行bash scalein
+cat <<EOF > index.js
+exports.myHandler = function(event, context, callback) {
+  const execFile = require('child_process').execFile;
+  execFile('./scalein.sh', (error, stdout, stderr) => {
+    if (error) {
+      callback(error);
+    }
+    callback(null, stdout);
+  });
+}
+EOF
+
+# 在lambda 要執行的shell
+cat <<EOF > scalein.sh
+#!/usr/bin/env bash
+sudo apt-get -y install python3.6 python3-pip 
+pip3 install awscli --upgrade --user
+mv config  .aws/config
+mv credentials .aws/credentials
+./eks-templates/full-install-aws.sh scalein
+EOF
+
+cat <<EOF > scaleout.sh
+#!/usr/bin/env bash
+sudo apt-get -y install python3.6 python3-pip 
+pip3 install awscli --upgrade --user
+mv config  .aws/config
+mv credentials .aws/credentials
+./eks-templates/full-install-aws.sh scaleout
+EOF
+
+ # 將 檔案壓縮準備上傳 scalein
+zip -r functionscalein.zip index.js  envprofile .aws/config .aws/credentials scalein.sh eks-templates scaleout.sh
+
+# 新增 lambda scalein
+aws lambda create-function --function-name scalein \
+--zip-file fileb://functionscalein.zip --handler index.handler --runtime nodejs10.x \
+--role $iamrole
+
+# nodejs for scaleout
+cat <<EOF > index.js
+exports.myHandler = function(event, context, callback) {
+  const execFile = require('child_process').execFile;
+  execFile('./scaleout.sh', (error, stdout, stderr) => {
+    if (error) {
+      callback(error);
+    }
+    callback(null, stdout);
+  });
+}
+EOF
+
+# 新增 lambda scaleout
+zip -r functionscaleout.zip index.js  envprofile .aws/config .aws/credentials scalein.sh eks-templates scaleout.sh
+
+# # 將 檔案壓縮準備上傳 scaleout
+aws lambda create-function --function-name scalein \
+--zip-file fileb://functionscaleout.zip --handler index.handler --runtime nodejs10.x \
+--role $iamrole
+
+# 建立cloudwatch events
+########################################
+
+# 建立排程 19:30 執行scalein
+aws events put-rule \
+--name scalein-scheduled-rule \
+--schedule-expression "cron(30 19 * * ? *)"
+
+#scalein scheduled rule ARN
+scaleinscheduledrule=arn:aws:events:$AWS_REGION:$AWS_ACCOUNT_ID:rule/scalein-scheduled-rule
+
+aws lambda add-permission \
+--function-name scalein \
+--statement-id scalein-scheduled-event \
+--action 'lambda:InvokeFunction' \
+--principal events.amazonaws.com \
+--source-arn $scaleinscheduledrule
+
+# 建立排程 7:30 執行scaleout
+aws events put-rule \
+--name scaleout-scheduled-rule \
+--schedule-expression "cron(30 7 * * ? *)"
+
+#scaleout scheduled rule ARN
+scaleoutscheduledrule=arn:aws:events:$AWS_REGION:$AWS_ACCOUNT_ID:rule/scaleout-scheduled-rule
+
+aws lambda add-permission \
+--function-name scaleout \
+--statement-id scaleout-scheduled-event \
+--action 'lambda:InvokeFunction' \
+--principal events.amazonaws.com \
+--source-arn $scaleoutscheduledrule
 }
 
 main $1
