@@ -235,6 +235,7 @@ cd $CURRENT_HOME/eks-templates
 # AmazonEKSAdminRole IAM Role
 iamrole=$(aws iam get-role --role-name AmazonEKSAdminRole --query 'Role.Arn' --output text)
 aws --region $AWS_REGION eks update-kubeconfig --name $CLUSTER_STACK_NAME --role-arn $iamrole
+echo "export iamrole=$iamrole" >> ~/envprofile
 }
 
 
