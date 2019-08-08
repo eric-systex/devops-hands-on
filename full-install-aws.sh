@@ -148,17 +148,17 @@ done
 echo "已完成EKS...."
 
 # 將變數寫入檔案
-echo "Random=$Randomvar" >> ~/.my-env 
-echo VPC_STACK_NAME=$VPC_STACK_NAME >> ~/.my-env 
-echo AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID >> ~/.my-env 
-echo REGION=$AWS_REGION >> ~/.my-env  
-echo EKS_ADMIN_ROLE=$iamrole >> ~/.my-env  
-echo VPC_ID=$vpcid >> ~/.my-env  
-echo SUBNET1=$Subnet01  >> ~/.my-env 
-echo SUBNET2=$Subnet02  >> ~/.my-env 
-echo SUBNET3=$Subnet03  >> ~/.my-env 
-echo CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME  >> ~/.my-env 
-echo SSH_KEY_NAME=$SSH_KEY_NAME >> ~/.my-env 
+echo "export Random=$Randomvar" >> ~/envprofile
+echo "export VPC_STACK_NAME=$VPC_STACK_NAME" >> ~/envprofile
+echo "export AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> ~/envprofile 
+echo "export REGION=$AWS_REGION" >> ~/envprofile 
+echo "export EKS_ADMIN_ROLE=$iamrole" >> ~/envprofile  
+echo "export VPC_ID=$vpcid" >> ~/envprofile
+echo "export SUBNET1=$Subnet01"  >> ~/envprofile
+echo "export SUBNET2=$Subnet02"  >> ~/envprofile 
+echo "export SUBNET3=$Subnet03"  >> ~/envprofile
+echo "export CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME"  >> ~/envprofile
+echo "export SSH_KEY_NAME=$SSH_KEY_NAME" >> ~/envprofile
 }
 
 # 新建ECR
