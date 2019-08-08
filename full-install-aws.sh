@@ -146,6 +146,19 @@ do
    sleep 10
 done
 echo "已完成EKS...."
+
+# 將變數寫入檔案
+echo "Random=$Randomvar" >> ~/.my-env 
+echo VPC_STACK_NAME=$VPC_STACK_NAME >> ~/.my-env 
+echo AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID >> ~/.my-env 
+echo REGION=$AWS_REGION >> ~/.my-env  
+echo EKS_ADMIN_ROLE=$iamrole >> ~/.my-env  
+echo VPC_ID=$vpcid >> ~/.my-env  
+echo SUBNET1=$Subnet01  >> ~/.my-env 
+echo SUBNET2=$Subnet02  >> ~/.my-env 
+echo SUBNET3=$Subnet03  >> ~/.my-env 
+echo CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME  >> ~/.my-env 
+echo SSH_KEY_NAME=$SSH_KEY_NAME >> ~/.my-env 
 }
 
 # 新建ECR
