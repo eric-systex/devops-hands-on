@@ -4,6 +4,8 @@
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
 # 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) create
 # 執行清除作業: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
+
+# 執行下面兩步驟必須先取得 envprofile 和 .aws/credentials
 # 執行節費縮減成一個node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scalein
 # 執行恢復成三個OnDemand node + 一個spot node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scaleout
 
