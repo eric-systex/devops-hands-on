@@ -4,6 +4,8 @@
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
 # 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) create
 # 執行清除作業: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
+# 執行節費縮減成一個node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scalein
+# 執行恢復成三個OnDemand node + 一個spot node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scaleout
 
 ## 或是想定義名稱
 ## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
@@ -17,6 +19,10 @@
 ############################################################################
 # AWS Region， 代碼網址 https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
 # 如果要建立兩座請分別建立在不同的region
+if [ $1 = scalein ]; then
+scalein
+elif [ $1 = scaleout ]; then
+else
 
 # 安裝套件在GCP的cloudshell上
 sudo apt-get -y install python3.6 python3-pip  > /dev/null 2>&1
@@ -538,4 +544,42 @@ aws iam delete-role --role-name AmazonEKSAdminRole
 
 ########################################################
 
+scalein(){
+# 讀取在create時的環境變數
+source envprofile
+
+# 變成只剩下一個OnDemand worknode
+OnDemandBaseCapacity=1 \
+NodeAutoScalingGroupDesiredSize=1 \
+AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID \
+REGION=$AWS_REGION \
+EKS_ADMIN_ROLE=$iamrole \
+VPC_ID=$vpcid \
+SUBNET1=$Subnet01 \
+SUBNET2=$Subnet02 \
+SUBNET3=$Subnet03 \
+CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME \
+make update-eks-cluster
+}
+
+scaleout(){
+# 讀取在create時的環境變數
+source envprofile
+
+# 變成三個OnDemand + 一個 spot worknode
+OnDemandBaseCapacity=3 \
+NodeAutoScalingGroupDesiredSize=4 \
+AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID \
+REGION=$AWS_REGION \
+EKS_ADMIN_ROLE=$iamrole \
+VPC_ID=$vpcid \
+SUBNET1=$Subnet01 \
+SUBNET2=$Subnet02 \
+SUBNET3=$Subnet03 \
+CLUSTER_STACK_NAME=$CLUSTER_STACK_NAME \
+make update-eks-cluster
+}
+
 main $1
+
+fi
