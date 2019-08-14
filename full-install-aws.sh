@@ -17,9 +17,6 @@
 ## 4. ./full-install-aws.sh create
 #############################################################################
 
-############################################################################
-# 登入aws 並取得變數
-############################################################################
 # AWS Region， 代碼網址 https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
 # 如果要建立兩座請分別建立在不同的region
 if [ $1 = scalein ]; then
@@ -30,6 +27,9 @@ elif [ $1 = ScheduleScaleInOut ]; then
 ScheduleScaleInOut
 else
 
+############################################################################
+# 登入aws 並取得變數
+############################################################################
 # 安裝套件在GCP的cloudshell上
 sudo apt-get -y install python3.6 python3-pip  > /dev/null 2>&1
 pip3 install awscli --upgrade --user  > /dev/null 2>&1
