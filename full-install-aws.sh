@@ -3,11 +3,12 @@
 # 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & ECR & keycloak & EFK & jenkins ....
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
 # 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) create
-# 執行清除作業: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
+# 執行清除作業(不包含執行過 ScheduleScaleInOut): bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
 
 # 執行下面兩步驟必須先取得 envprofile 和 .aws/credentials
 # 執行節費縮減成一個node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scalein
 # 執行恢復成三個OnDemand node + 一個spot node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scaleout
+# 自動scaleout: 7:30, scalein: 19:30: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) ScheduleScaleInOut
 
 ## 或是想定義名稱
 ## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
@@ -24,6 +25,9 @@
 if [ $1 = scalein ]; then
 scalein
 elif [ $1 = scaleout ]; then
+scaleout
+elif [ $1 = ScheduleScaleInOut ]; then
+ScheduleScaleInOut
 else
 
 # 安裝套件在GCP的cloudshell上
