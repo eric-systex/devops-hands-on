@@ -8,7 +8,6 @@
 project=$(gcloud config list --format 'value(core.project)')
 CLUSTERNAME=$(gcloud container clusters list  --format 'value(name)')
 zone=$(gcloud container clusters list  --format 'value(zone)')
-region=asia-east2
 
 # 建立GCP service account : gcp-sa  並產生 key.json
 gcloud iam service-accounts create gcp-sa --display-name "scale-gke-sa"
