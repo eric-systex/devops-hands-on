@@ -105,7 +105,10 @@ echo "gcloud auth activate-service-account $servicesa --key-file=sakey.json --pr
 
 echo "gcloud container clusters resize $CLUSTERNAME --node-pool default-pool --size $SIZE" >> scaleoutrun.sh
 
-
+#############################################################
+## 修復 redis cluster 重啟後IP問題
+#### 建立redis cluster https://github.com/sanderploegsma/redis-cluster
+###############################################################
 echo "DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
 echo "CURRENT=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 13) >> scaleoutrun.sh
 echo "while [ "$DESIRED" != "$CURRENT" ]  >> scaleoutrun.sh
@@ -123,7 +126,7 @@ echo "  echo "$pod_name $redis_id $redis_ip" >> scaleoutrun.sh
 echo "  kubectl exec redis-cluster-0 -n redis -- sed -i.bak -e "/^$redis_id/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$redis_ip/" /data/nodes.conf >> scaleoutrun.sh
 echo "done >> scaleoutrun.sh
 echo "kubectl delete po redis-cluster-0 -n redis >> scaleoutrun.sh
-
+#############################################################
 
 echo "init 0" >> scaleoutrun.sh
 
