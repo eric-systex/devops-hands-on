@@ -105,6 +105,26 @@ echo "gcloud auth activate-service-account $servicesa --key-file=sakey.json --pr
 
 echo "gcloud container clusters resize $CLUSTERNAME --node-pool default-pool --size $SIZE" >> scaleoutrun.sh
 
+
+echo "DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
+echo "CURRENT=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 13) >> scaleoutrun.sh
+echo "while [ "$DESIRED" != "$CURRENT" ]  >> scaleoutrun.sh
+echo " do  >> scaleoutrun.sh
+echo "  sleep 1 >> scaleoutrun.sh
+echo "  DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
+echo "  CURRENT=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 13) >> scaleoutrun.sh
+echo " done >> scaleoutrun.sh
+
+echo "for pod_name in $(kubectl get pods -n redis -l app=redis-cluster -o jsonpath='{range.items[*]}{.metadata.name} '); >> scaleoutrun.sh
+echo "do >> scaleoutrun.sh
+echo "  redis_id=$(kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{print $1}') >> scaleoutrun.sh
+echo "  redis_ip=$(kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{split($2,a,":" ); print a[1]}') >> scaleoutrun.sh
+echo "  echo "$pod_name $redis_id $redis_ip" >> scaleoutrun.sh
+echo "  kubectl exec redis-cluster-0 -n redis -- sed -i.bak -e "/^$redis_id/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$redis_ip/" /data/nodes.conf >> scaleoutrun.sh
+echo "done >> scaleoutrun.sh
+echo "kubectl delete po redis-cluster-0 -n redis >> scaleoutrun.sh
+
+
 echo "init 0" >> scaleoutrun.sh
 
 ############################################
