@@ -110,12 +110,9 @@ echo "gcloud container clusters resize $CLUSTERNAME --node-pool default-pool --s
 #### 建立redis cluster https://github.com/sanderploegsma/redis-cluster
 ###############################################################
 echo "DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
-echo "CURRENT=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 13) >> scaleoutrun.sh
-echo "while [ "$DESIRED" != "$CURRENT" ]  >> scaleoutrun.sh
+echo "while [ "$(kubectl get pods -n redis -l app=redis-cluster  | grep Running | grep '1/1' | wc -l )" != "$DESIRED" ]  >> scaleoutrun.sh
 echo " do  >> scaleoutrun.sh
 echo "  sleep 1 >> scaleoutrun.sh
-echo "  DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
-echo "  CURRENT=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 13) >> scaleoutrun.sh
 echo " done >> scaleoutrun.sh
 
 echo "for pod_name in $(kubectl get pods -n redis -l app=redis-cluster -o jsonpath='{range.items[*]}{.metadata.name} '); >> scaleoutrun.sh
