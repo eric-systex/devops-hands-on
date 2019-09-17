@@ -553,7 +553,8 @@ aws ecr delete-repository --force --repository-name debian9 --force
 aws ecr delete-repository --force --repository-name jnlp-slave --force 
 aws iam delete-user --user-name jenkine-ecr
 aws iam delete-group --group-name EKSAdmin
-aws iam delete-role --role-name AmazonEKSAdminRole 
+aws iam delete-role --role-name jenkins-ecr-assumerole
+# aws iam delete-role --role-name AmazonEKSAdminRole
 }
 
 ########################################################
