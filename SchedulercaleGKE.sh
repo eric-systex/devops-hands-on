@@ -109,20 +109,28 @@ echo "gcloud container clusters resize $CLUSTERNAME --node-pool default-pool --s
 ## 修復 redis cluster 重啟後IP問題
 #### 建立redis cluster https://github.com/sanderploegsma/redis-cluster
 ###############################################################
-echo "DESIRED=$(kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4) >> scaleoutrun.sh
-echo "while [ "$(kubectl get pods -n redis -l app=redis-cluster  | grep Running | grep '1/1' | wc -l )" != "$DESIRED" ]  >> scaleoutrun.sh
-echo " do  >> scaleoutrun.sh
-echo "  sleep 1 >> scaleoutrun.sh
-echo " done >> scaleoutrun.sh
+echo "DESIRED=$(sudo kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4)" >> scaleoutrun.sh
+echo "while [ "$(sudo kubectl get pods -n redis -l app=redis-cluster  | grep Running | grep '1/1' | wc -l )" != "$DESIRED" ]  >> scaleoutrun.sh
+echo " do"  >> scaleoutrun.sh
+echo "  DESIRED=$(sudo kubectl get sts -n redis  | grep redis-cluster | cut -d ' ' -f 4)"  >> scaleoutrun.sh
+echo "  sleep 1" >> scaleoutrun.sh
+echo " done" >> scaleoutrun.sh
+echo "  sleep 60" >> scaleoutrun.sh
 
-echo "for pod_name in $(kubectl get pods -n redis -l app=redis-cluster -o jsonpath='{range.items[*]}{.metadata.name} '); >> scaleoutrun.sh
-echo "do >> scaleoutrun.sh
-echo "  redis_id=$(kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{print $1}') >> scaleoutrun.sh
-echo "  redis_ip=$(kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{split($2,a,":" ); print a[1]}') >> scaleoutrun.sh
+echo "for pod_name in $(sudo kubectl get pods -n redis -l app=redis-cluster -o jsonpath='{range.items[*]}{.metadata.name} ');" >> scaleoutrun.sh
+echo "do" >> scaleoutrun.sh
+echo "  redis_id=$(sudo kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{print $1}')" >> scaleoutrun.sh
+echo "  redis_ip=$(sudo kubectl exec $pod_name -n redis -- cat /data/nodes.conf | grep 'myself' | awk '{split($2,a,":" ); print a[1]}')" >> scaleoutrun.sh
 echo "  echo "$pod_name $redis_id $redis_ip" >> scaleoutrun.sh
-echo "  kubectl exec redis-cluster-0 -n redis -- sed -i.bak -e "/^$redis_id/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$redis_ip/" /data/nodes.conf >> scaleoutrun.sh
-echo "done >> scaleoutrun.sh
-echo "kubectl delete po redis-cluster-0 -n redis >> scaleoutrun.sh
+echo '  sudo kubectl exec redis-cluster-0 -n redis -- sed -i.bak -e "/^$redis_id/ s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$redis_ip/" /data/nodes.conf' >> scaleoutrun.sh
+echo "done" >> scaleoutrun.sh
+echo "  sleep 10" >> scaleoutrun.sh
+
+echo "sudo kubectl delete po redis-cluster-0 -n redis" >> scaleoutrun.sh
+echo "  sleep 10" >> scaleoutrun.sh
+echo "sudo kubectl delete po $(sudo kubectl get pod -l app=order-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
+echo "sudo kubectl delete po $(sudo kubectl get pod -l app=studio-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
+
 #############################################################
 
 echo "init 0" >> scaleoutrun.sh
