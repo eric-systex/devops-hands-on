@@ -65,7 +65,7 @@ CURRENT_HOME=$(pwd)
   echo "您使用的亂數為 : $Random"
 
 # 輸入VPC的名稱
-VPC_STACK_NAME=ekspvc$Random
+VPC_STACK_NAME=eksvpc$Random
 echo "VPC name : $VPC_STACK_NAME"
 
 # 輸入eks的叢集名稱
@@ -143,7 +143,7 @@ aws iam create-role --role-name AmazonEKSAdminRole --assume-role-policy-document
 aws iam attach-role-policy --role-name AmazonEKSAdminRole --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess
 aws iam attach-role-policy --role-name AmazonEKSAdminRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 aws iam put-role-policy --role-name AmazonEKSAdminRole --policy-name EKSAdminExtraPolicies --policy-document file://eks-admin-iam-policy.json
-aws iam put-role-policy --role-name GetRoleallow --policy-name GetRoleallow --policy-document file://getroleallow.json
+aws iam put-role-policy --role-name AmazonEKSAdminRole --policy-name GetRoleallow --policy-document file://getroleallow.json
 sleep 20
 iamrole=$(aws iam get-role --role-name AmazonEKSAdminRole --query 'Role.Arn' --output text)
 
@@ -505,6 +505,8 @@ setupService() {
   INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' | nslookup | grep Address | tail -n1 | awk -F" " '{print $2}') 
   echo "(IP=$INGRESS_HOST)...完成"
 
+  sleep 30
+  
   printf "  開啟對外服務中..."
   helm template --set istio.ingressgateway.ip=$INGRESS_HOST devops-hands-on/svc | kubectl apply -f - > /dev/null 2>&1 && echo "完成"
   > ~/.my-env
