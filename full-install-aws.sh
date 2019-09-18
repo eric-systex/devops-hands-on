@@ -37,6 +37,7 @@ echo "請到 AWS 的IAM 上取得帳號的 Access Key ID 和 Secret access key"
 
 # 使用者是否登入
 echo "請於下列互動介面輸入剛剛取得 AWS 的 Access Key ID , Secret access key 和 REGION 以及相關資訊"
+sudo cp ~/.local/bin/aws /bin/
 aws configure
 
 ########################
@@ -506,6 +507,11 @@ setupService() {
   echo "(IP=$INGRESS_HOST)...完成"
 
   sleep 30
+  
+  while [ `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' | nslookup | grep Address | tail -n1 | awk -F" " '{print $2}' | wc -c` -eq 19 ]
+  do
+    sleep 1
+  done
   
   printf "  開啟對外服務中..."
   helm template --set istio.ingressgateway.ip=$INGRESS_HOST devops-hands-on/svc | kubectl apply -f - > /dev/null 2>&1 && echo "完成"
