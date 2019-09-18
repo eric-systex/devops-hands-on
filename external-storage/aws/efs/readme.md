@@ -10,7 +10,7 @@ git clone https://github.com/harryliu123/devops-hands-on
 
 cd external-storage/aws/efs/
 
-請修改 deploy.yaml
+## 請修改 deploy.yaml
 
   file.system.id: fs-218dd98a
   
