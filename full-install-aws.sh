@@ -105,6 +105,7 @@ createiamgroup
 installkeycloak
 InstallEcrJenkins
 installistio
+changestorageclass
 installEFK
 installKSM
 setupService
@@ -453,6 +454,21 @@ EOF
     --set configmap.docker.config_json=docker-registry-key \
     devops-hands-on/jenkins > /dev/null 2>&1 && echo "完成"
 
+}
+changestorageclass(){
+kubectl delete sc faster > /dev/null 2>&1
+cat <<EOF | kubectl apply -f - > /dev/null 2>&1
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: faster
+parameters:
+  fsType: ext4
+  type: gp2
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+EOF
 }
 
 installEFK() {
