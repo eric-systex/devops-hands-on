@@ -236,6 +236,7 @@ aws iam update-assume-role-policy --role-name AmazonEKSAdminRole --policy-docume
 }
 
 createiamgroup(){
+aws iam create-group --group-name EKSAdmin
 aws iam put-group-policy --group-name EKSAdmin --policy-document file://getroleallow.json --policy-name EKSAdmingrouprole
 echo "記得將IAM user 加入倒 EKSAdmin群組, 然後每個人都要執行 updatekubectlconfigure()"
 }
