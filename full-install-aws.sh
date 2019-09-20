@@ -230,9 +230,9 @@ installKubectl() {
 # 執行更新IAM role
 updaterole(){
 cd $CURRENT_HOME/eks-templates
-sed -i "s/620154271401/${AWS_ACCOUNT_ID}/g" assume-role-policy.json
-sed -i "s/harry-admin/${iamuseraccount}/g" assume-role-policy.json
-aws iam update-assume-role-policy --role-name AmazonEKSAdminRole --policy-document file://assume-role-policy.json
+sed -i "s/620154271401/${AWS_ACCOUNT_ID}/g" assume-role-man-policy.json
+sed -i "s/harry-admin/${iamuseraccount}/g" assume-role-man-policy.json
+aws iam update-assume-role-policy --role-name AmazonEKSAdminRole --policy-document file://assume-role-man-policy.json
 }
 
 createiamgroup(){
