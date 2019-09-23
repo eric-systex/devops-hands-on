@@ -1,11 +1,17 @@
-FROM golang:alpine
+# stage: builder
+FROM golang:alpine AS builder
+USER root
 RUN apk --no-cache add git && \
     git clone https://github.com/awslabs/amazon-ecr-credential-helper /go/src/github.com/awslabs/amazon-ecr-credential-helper && \
     go build -o /assets/docker-credential-ecr-login github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login
 
-FROM jenkins/jnlp-slave:alpine
 
+# stage: resource
+FROM jenkins/jnlp-slave:alpine AS resource
 USER root
+COPY --from=builder /assets/docker-credential-ecr-login /usr/local/bin/docker-credential-ecr-login
+RUN ln -s /usr/local/bin/docker-credential-ecr-login /usr/local/bin/ecr-login
+
 ARG jenkine_ACCESS_KEY_ID
 ARG jenkine_SECRET_ACCESS_KEY
 
@@ -26,8 +32,6 @@ RUN apk add curl wget \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 # creare aws service account SECRET_ACCESS in ~/.aws/credentials
-COPY --from=builder /assets/docker-credential-ecr-login /usr/local/bin/docker-credential-ecr-login
-RUN ln -s /usr/local/bin/docker-credential-ecr-login /usr/local/bin/ecr-login
 RUN echo "[default]" > ~/.aws/credentials
 RUN echo "aws_access_key_id = ${jenkine_ACCESS_KEY_ID}" >> ~/.aws/credentials
 RUN echo "aws_secret_access_key = ${jenkine_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
