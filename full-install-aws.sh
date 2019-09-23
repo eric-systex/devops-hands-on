@@ -412,7 +412,7 @@ EOF
 sed -i "s/region/${AWS_REGION}/g" docker-config.json
 sed -i "s/aws_account_id/${AWS_ACCOUNT_ID}/g" docker-config.json
 kubectl create configmap docker-registry-key --from-file=docker-config.json  > /dev/null 2>&1
-# kubectl create configmap google-container-key  --from-file=docker-config.json  > /dev/null 2>&1
+kubectl create configmap google-container-key  --from-file=docker-config.json  > /dev/null 2>&1
 
 
   echo "安裝 Jenkins ..."
