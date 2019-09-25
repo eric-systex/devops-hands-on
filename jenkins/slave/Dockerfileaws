@@ -11,6 +11,7 @@ FROM jenkins/jnlp-slave:alpine AS resource
 USER root
 COPY --from=builder /assets/docker-credential-ecr-login /usr/local/bin/docker-credential-ecr-login
 RUN ln -s /usr/local/bin/docker-credential-ecr-login /usr/local/bin/ecr-login
+RUN ln -s /usr/local/bin/docker-credential-ecr-login /usr/bin/ecr-login
 
 ARG jenkine_ACCESS_KEY_ID
 ARG jenkine_SECRET_ACCESS_KEY
@@ -32,10 +33,13 @@ RUN apk add curl wget \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 # creare aws service account SECRET_ACCESS in ~/.aws/credentials
-RUN mkdir ~/.aws/
+RUN mkdir -p ~/.aws
 RUN echo "[default]" > ~/.aws/credentials
 RUN echo "aws_access_key_id = ${jenkine_ACCESS_KEY_ID}" >> ~/.aws/credentials
 RUN echo "aws_secret_access_key = ${jenkine_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
+
+RUN mkdir -p ~/.docker
+COPY docker-config.json ~/.docker/config.json
     
 WORKDIR /opt
 
