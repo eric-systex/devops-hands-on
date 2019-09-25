@@ -368,13 +368,18 @@ cat <<'EOF' > jenkins-ecr-role.json
       "Sid": "AllowPushPull",
       "Effect": "Allow",
       "Action": [
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
+        "ecr:GetAuthorizationToken",
         "ecr:BatchCheckLayerAvailability",
-        "ecr:PutImage",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:BatchGetImage",
         "ecr:InitiateLayerUpload",
         "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload"
+        "ecr:CompleteLayerUpload",
+        "ecr:PutImage"
       ],
 	  "Resource":"*"
 	}
