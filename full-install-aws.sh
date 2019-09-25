@@ -394,6 +394,9 @@ aws iam create-role --role-name jenkins-ecr-assumerole --assume-role-policy-docu
 #為角色建立內嵌許可政策
 aws iam put-role-policy --role-name jenkins-ecr-assumerole --policy-name jenkins-ecr-role --policy-document file://jenkins-ecr-role.json
 
+# attach-user-policy AmazonEC2ContainerRegistryPowerUser to iam user jenkine-ecr
+POLICYARN=$(aws iam list-policies --query 'Policies[?PolicyName==`AmazonEC2ContainerRegistryPowerUser`].{ARN:Arn}' --output text) 
+aws iam attach-user-policy --user-name jenkine-ecr  --policy-arn $POLICYARN
 
 # https://github.com/awslabs/amazon-ecr-credential-helper
 # 建立 configmap for awscredentials_jenkins 放在jenkins的 ~/.aws/credentials
