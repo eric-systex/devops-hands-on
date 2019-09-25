@@ -438,7 +438,7 @@ EOF
 
   printf "  正在安裝 jenkins-slave ... "
   printf "create repository..." && aws ecr create-repository --repository-name=jnlp-slave > /dev/null 2>&1
-  printf "build..." && docker build --build-arg jenkine_ACCESS_KEY_ID=${jenkine_ACCESS_KEY_ID} jenkine_SECRET_ACCESS_KEY=${jenkine_SECRET_ACCESS_KEY} -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/jnlp-slave:v1 -f devops-hands-on/jenkins/slave/Dockerfileaws . > /dev/null 2>&1
+  printf "build..." && docker build --build-arg jenkine_ACCESS_KEY_ID=${jenkine_ACCESS_KEY_ID} --build-arg jenkine_SECRET_ACCESS_KEY=${jenkine_SECRET_ACCESS_KEY} -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/jnlp-slave:v1 -f devops-hands-on/jenkins/slave/Dockerfileaws . > /dev/null 2>&1
   printf "push..." && docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/jnlp-slave:v1 > /dev/null 2>&1
   echo "完成"
 
