@@ -240,7 +240,7 @@ data:
   username: YWRtaW4=
   passphrase: c3lzdGV4
 EOF
-  helm template --name istio-init --namespace istio-system install/kubernetes/helm/istio-init/ | kubectl apply -f -
+ # helm template --name istio-init --namespace istio-system install/kubernetes/helm/istio-init/ | kubectl apply -f -
   helm template install/kubernetes/helm/istio \
     --name istio --namespace istio-system \
     --set sidecarInjectorWebhook.enabled=true \
