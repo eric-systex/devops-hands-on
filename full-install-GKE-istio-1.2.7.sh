@@ -308,7 +308,8 @@ confirmInstall() {
   fi
 
   printf "  Istio System ..............................."
-  if [ $(kubectl get po -n istio-system | grep -E "servicegraph|prometheus|kiali|tracing|telemetry|sidecar|policy|egressgateway|galley|ingressgateway|pilot" | wc -l ) -ge 11 ]; then
+  # if [ $(kubectl get po -n istio-system | grep -E "servicegraph|prometheus|kiali|tracing|telemetry|sidecar|policy|egressgateway|galley|ingressgateway|pilot" | wc -l ) -ge 11 ]; then
+  if [ $(kubectl get po -n istio-system | wc -l7 ) -ge 11 ]; then
     echo "已安裝."
   else 
     echo "失敗."
