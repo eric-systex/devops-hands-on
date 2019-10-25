@@ -128,8 +128,8 @@ echo "  sleep 10" >> scaleoutrun.sh
 
 echo "sudo kubectl delete po redis-cluster-0 -n redis" >> scaleoutrun.sh
 echo "  sleep 10" >> scaleoutrun.sh
-echo "sudo kubectl delete po $(sudo kubectl get pod -l app=order-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
-echo "sudo kubectl delete po $(sudo kubectl get pod -l app=studio-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
+# echo "sudo kubectl delete po $(sudo kubectl get pod -l app=order-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
+# echo "sudo kubectl delete po $(sudo kubectl get pod -l app=studio-service -o jsonpath="{.items[0].metadata.name}")" >> scaleoutrun.sh
 
 #############################################################
 
