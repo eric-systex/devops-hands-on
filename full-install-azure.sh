@@ -1,9 +1,9 @@
 #######################################################
 # 無法在Azure shell或是 aws shell上執行, 因為沒有docker daemon可以使用
 # 請使用 在GCP 的cloud : https://console.cloud.google.com
-# 新增請直接執行      bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-azure.sh) create
-# 其他使用者連線AKS  bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-azure.sh) connect 
-# 刪除所有資源請執行  bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-azure.sh) delete 
+# 新增請直接執行      bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-azure.sh) create
+# 其他使用者連線AKS  bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-azure.sh) connect 
+# 刪除所有資源請執行  bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-azure.sh) delete 
 # 2019/7/31 建立完成  每日產生 700元台幣費用
 #######################################################
 Randomvar=(awk -v min=100000 -v max=999999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
@@ -274,7 +274,7 @@ roleRef:
 EOF
 
   printf "  正在安裝 jenkins-slave ... "
-  git clone https://github.com/harryliu123/devops-hands-on.git > /dev/null 2>&1
+  git clone https://github.com/eric-systex/devops-hands-on.git > /dev/null 2>&1
   printf "build..." && docker build -t $Registryname.azurecr.io/jnlp-slave:v1 devops-hands-on/jenkins/slave > /dev/null 2>&1
   printf "push..." && docker push $Registryname.azurecr.io/jnlp-slave:v1 > /dev/null 2>&1
   echo "完成"

@@ -18,7 +18,7 @@ K8S_ADMIN_CREDENTIAL=$(kubectl describe secret jenkins-deployer | grep token: | 
 ## 下載Lab專用 Jenkins 安裝設定資料
 
 ```
-git clone https://github.com/harryliu123/devops-hands-on.git
+git clone https://github.com/eric-systex/devops-hands-on.git
 cd devops-hands-on/
 helm install jenkins --set Master.K8sAdminCredential=$K8S_ADMIN_CREDENTIAL
 ```

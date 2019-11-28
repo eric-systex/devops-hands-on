@@ -65,7 +65,7 @@ gcloud compute instances create scalein-jobvm  \
 ### 注意 Cloud Functions Locations 沒有台灣 asia-east1 不能使用 https://cloud.google.com/functions/docs/locations
 gcloud config set functions/region asia-east2	
 
-git clone https://github.com/harryliu123/devops-hands-on.git
+git clone https://github.com/eric-systex/devops-hands-on.git
 cd GCE-scheduler-off-on
 ./deploy.sh
 

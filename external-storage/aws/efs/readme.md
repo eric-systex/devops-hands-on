@@ -6,7 +6,7 @@ https://github.com/stelligent/cloudformation_templates/tree/master/storage
 
 provisioner EFS create
 ---
-git clone https://github.com/harryliu123/devops-hands-on
+git clone https://github.com/eric-systex/devops-hands-on
 
 cd external-storage/aws/efs/
 

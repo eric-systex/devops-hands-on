@@ -2,16 +2,16 @@
 #############################################################################
 # 安裝 Lab(k8s) 課程環境，在AWS 建立 EKS & ECR & keycloak & EFK & jenkins ....
 # 必須要在 cloud shell上執行, 整個過程大概40分鐘
-# 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) create
-# 執行清除作業(不包含執行過 ScheduleScaleInOut): bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) delete
+# 執行新增步驟: bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh) create
+# 執行清除作業(不包含執行過 ScheduleScaleInOut): bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh) delete
 
 # 執行下面兩步驟必須先取得 envprofile 和 .aws/credentials
-# 執行節費縮減成一個node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scalein
-# 執行恢復成三個OnDemand node + 一個spot node: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) scaleout
-# 自動scaleout: 7:30, scalein: 19:30: bash <(curl -L https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh) ScheduleScaleInOut
+# 執行節費縮減成一個node: bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh) scalein
+# 執行恢復成三個OnDemand node + 一個spot node: bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh) scaleout
+# 自動scaleout: 7:30, scalein: 19:30: bash <(curl -L https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh) ScheduleScaleInOut
 
 ## 或是想定義名稱
-## 1. wget https://raw.githubusercontent.com/harryliu123/devops-hands-on/master/full-install-aws.sh 
+## 1. wget https://raw.githubusercontent.com/eric-systex/devops-hands-on/master/full-install-aws.sh 
 ## 2. 修改 full-install-aws.sh 裡面 "如果不爽想親自定義名稱請改下面"  下面內容
 ## 3. chmod 740 full-install-aws.sh
 ## 4. ./full-install-aws.sh create
@@ -130,7 +130,7 @@ fi
 installeks() {
 cd $CURRENT_HOME
 # 下載安裝包
-git clone https://github.com/harryliu123/eks-templates
+git clone https://github.com/eric-systex/eks-templates
 cd eks-templates
 # 建立VPC
 aws cloudformation create-stack  --stack-name ${VPC_STACK_NAME} --template-body file://eks-vpc.yaml --region $AWS_REGION
@@ -424,7 +424,7 @@ kubectl create configmap google-container-key  --from-file=docker-config.json  >
 
 
   echo "安裝 Jenkins ..."
-  git clone https://github.com/harryliu123/devops-hands-on.git > /dev/null 2>&1
+  git clone https://github.com/eric-systex/devops-hands-on.git > /dev/null 2>&1
   kubectl create sa jenkins-deployer > /dev/null 2>&1
   kubectl create clusterrolebinding jenkins-deployer-role --clusterrole=cluster-admin --serviceaccount=default:jenkins-deployer > /dev/null 2>&1
   K8S_ADMIN_CREDENTIAL=$(kubectl describe secret jenkins-deployer | grep token: | awk -F" " '{print $2}')
